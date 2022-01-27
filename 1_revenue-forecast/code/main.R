@@ -14,7 +14,7 @@ if(!getwd() == file.path(file.dir,sub.dir)){setwd(file.path(file.dir,sub.dir))}
 
 # Load Packages
 if(!require("pacman")) install.packages("pacman")
-p_load(data.table,ggplot2,readxl)
+p_load(data.table,ggplot2,readxl,fixest,forecast,stargazer,modelsummary)
 
 # p_load(here,haven,data.table,sandwich,lmtest,ggplot2,dplyr,tictoc,fixest,
        # parallel,modelsummary,car,stargazer,gridExtra,collapse,ivreg,fastDummies,vtable,xtable)

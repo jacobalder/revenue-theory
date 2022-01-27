@@ -20,6 +20,7 @@ loader <- function(sheet,range){
 ### General Tax Revenue
 tax <- loader("Data","A6:E203")
 tax = tax[!apply(is.na(tax) | tax == "", 1, all)]
+tax = setnames(tax,1:5,c("CY","FY","Qtr","Sales_Tax_Rev","IITax_Rev"))
 
 ### Corporate Income Tax
 cit <- loader("CIT","C2:P17")
