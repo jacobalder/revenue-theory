@@ -1,3 +1,11 @@
+************************************************************************
+************************************************************************
+* This is not my work; this is from Dr. Denvil Duncan; all creative 
+* credit and rights are his. 
+* Email: duncande@indiana.edu
+************************************************************************
+************************************************************************
+
 clear
 capture cd "/Volumes/GoogleDrive/My Drive/SPEA - Teaching/SPEA - F609/Data"
 
