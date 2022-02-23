@@ -9,36 +9,24 @@
 ################################################################################
 source("code/stats.R")
 
-# June Percentage difference
-pdf("figures/jun.per_diff.xts.pdf")
-plot(jun.per_diff.xts)
-dev.off()
+# Rescale
+rescale = 1000
+dt = dt[,`:=` (r = Revenue/rescale, m2 = (y_new_m2/rescale) + 129, m3 = y_new_m3/rescale)]
+date_intercept = dt$Date[97]
+inch = 6
 
-# June Mean Percentage difference FY
-pdf("figures/jun.mean_diff_FY.pdf")
-plot(jun.mean_diff_FY)
-abline(0,0,col = 2,lty = "dashed",lwd = 4)
-dev.off()
+(g1 = ggplot(dt) + 
+  geom_vline(xintercept=date_intercept, linetype='dashed', color='gray', size = 0.9) + 
+  geom_line(aes(x = Date, y = r, color = "Actual Revenue")) + 
+  geom_line(aes(x = Date, y = m3, color = "Fixed Effects Model")) + 
+  geom_line(aes(x = Date, y = m2, color = "Linear OLS Model")) + 
+  labs(x = "Year", y = "Revenue [$ millions]", color = "Results") + 
+  theme_classic() + 
+  scale_color_brewer(palette="Dark2")
+)
+ggsave("figures/g1.pdf",g1,"pdf",
+       units = "in", width = inch+2, height = inch)
 
-# June Mean Percentage difference Month
-pdf("figures/jun.mean_diff_Month.pdf")
-plot(jun.mean_diff_Month)
-abline(0,0,col = 2,lty = "dashed",lwd = 4)
-dev.off()
-
-# Seasonal trends
-pdf("figures/pit_ts_trends.pdf")
-plot(as.ts(decompose_pit$seasonal))
-plot(as.ts(decompose_pit$trend))
-plot(as.ts(decompose_pit$random))
-plot(decompose_pit)
-dev.off()
-
-# Composed Forecast
-pdf("figures/pit_ts_forecast.pdf")
-plot(pit.fc,
-     xlab = "Time",
-     ylab = "Actual Revenues Collected",
-     flwd = 2)
-lines(decompose_pit$trend, col = 4, lty = "dashed",lwd = 3)
-dev.off()
+# Output table
+forecast = dt[FY>=2020,list(FY,Month,Revenue,y_new_m2,y_new_m3)]
+write.csv(forecast, file = "figures/forecast.csv")

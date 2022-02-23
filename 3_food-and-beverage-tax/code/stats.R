@@ -20,7 +20,13 @@ fbt.long[,`:=`(Day = 1)][,`:=`(Date = as.Date(with(fbt.long,paste(FY,Month,Day,s
 # Convert FY from factor format; drop Day; rearrange cols
 fbt.long = fbt.long[,FY:=as.numeric(as.character(FY))][,Day:=NULL][,c(4,2,1,3)]
 setorder(fbt.long,Date)
+
+# Make trend variable
+fbt.long[,`:=`(trend = seq(1,length(FY),1))]
+
+# Keep 2020 and 2021 for the future
 fbt.full = fbt.long
+
 # drop 2020 and 2021;
 fbt.long = fbt.long[FY<=2019,]
 
@@ -29,9 +35,6 @@ startM = as.numeric(strftime(head(fbt.long$Date, 1), format = "%m"))
 startY = as.numeric(strftime(head(fbt.long$Date, 1) + 1, format =" %Y")) 
 # print(ts(fbt.long$Revenue, frequency = 12, start = c(startM, startY)), calendar = T)
 fbt.ts = ts(fbt.long, frequency = 12, start = c(startY))
-
-# Make trend variable
-fbt.long[,`:=`(trend = seq(1,length(FY),1))]
 
 # XTS :: Time series, revenue
 fbt.xts = xts(fbt.long$Revenue,fbt.long$Date)
@@ -70,35 +73,48 @@ d.ols.3 = feols(fmla, fbt.d, vcov = 'hc1')
 # Compare Outputs
 modelsummary(list(ols.1,ols.2,ols.3,d.ols.1,d.ols.2,d.ols.3))
 
+# Save Outputs
+models = list("Linear" = ols.2, "Fixed Effects" = d.ols.2)
+modelsummary(models, output = "figures/t1.tex")
+
 # Predictions
 fbt.d[,`:=`(yhat = predict(d.ols.3), e=residuals(d.ols.3))][, diff:=Revenue-yhat]
-summary(fbt.d$diff)
-plot(y = fbt.d$diff, x = fbt.d$trend)
-lines(y = fbt.d$diff, x = fbt.d$trend)
-plot(y = fbt.d$Revenue, x = fbt.d$trend)
-dev.off()
 
 # Extrapolate the Models
 x = data.table(coefficients(d.ols.3), keep.rownames = T)
 
+# Model 2
+#* y_{it}=\alpha+\beta\ trend+\varepsilon_{it}
+model2 = coefficients(ols.1)
 
+# Extrapolate Model 2
+fbt.full[,`:=`(y_new_m2 = trend * model2)]
 
-# Decompose fbt
-ts_fbt = ts(fbt.ts, frequency = 12)
-decompose_fbt = decompose(ts_fbt, "additive")
+# Model 3
+#* y_{it}=\alpha+\beta\ trend+\varepsilon_{it}
+d.fbt.full = dummy_cols(fbt.full,select_columns=c('Month'),remove_first_dummy = T) # make Dummy Cols for zeta_m
 
-# Forecast
-fbt.fc = forecast(ts_fbt,h=12,robust = T)
+# Extrapolate
+d.fbt.full[,y_new_m3 := d.ols.3$coefficients[1] + 
+         d.ols.3$coefficients[2] * d.fbt.full$trend + 
+         d.ols.3$coefficients[3] * d.fbt.full$Month_2 + 
+         d.ols.3$coefficients[4] * d.fbt.full$Month_3 + 
+         d.ols.3$coefficients[5] * d.fbt.full$Month_4 + 
+         d.ols.3$coefficients[6] * d.fbt.full$Month_5 + 
+         d.ols.3$coefficients[7] * d.fbt.full$Month_6 + 
+         d.ols.3$coefficients[8] * d.fbt.full$Month_7 + 
+         d.ols.3$coefficients[9] * d.fbt.full$Month_8 + 
+         d.ols.3$coefficients[10] * d.fbt.full$Month_9 + 
+         d.ols.3$coefficients[11] * d.fbt.full$Month_10 + 
+         d.ols.3$coefficients[12] * d.fbt.full$Month_11 + 
+         d.ols.3$coefficients[13] * d.fbt.full$Month_12
+]
 
-# -------------------------------------------------------------------------
-# DATA FROM IN SBA --------------------------------------------------------
-# -------------------------------------------------------------------------
-# June percentage xts
-jun.per_diff = jun_rep[Individual_AGI=="Difference_%",][,Individual_AGI:=NULL]
-jun.per_diff.long=melt(jun.per_diff,id.vars=c("FY","Y-T-D"),value.name="Difference_%",variable.name="Month")
-jun.per_diff.long[,`:=`(Day = 1)][,`:=`(Date = as.Date(with(jun.per_diff.long,paste(FY,Month,Day,sep="-")),"%Y-%B-%d"))][,Day:=NULL]
-jun.per_diff.xts = xts(jun.per_diff.long$`Difference_%`,jun.per_diff.long$Date)
+## Summarize
+d.fbt.full[FY>=2020,`:=`(sum_revenue = sum(Revenue), sum_m2 = sum(y_new_m2), sum_m3=sum(y_new_m3)), by = FY]
 
-# June mean percentage 
-jun.mean_diff_FY = jun.per_diff.long[,.(mean_diff = mean(`Difference_%`)),by = list(FY)]
-jun.mean_diff_Month = jun.per_diff.long[,.(mean_diff = mean(`Difference_%`)),by = list(Month)]
+# Consolidate
+dt = d.fbt.full[,list(Date,FY,Month,trend,Revenue,y_new_m2,y_new_m3,sum_revenue,sum_m2,sum_m3)]
+                  
+rm(list=setdiff(ls(),c("dt")))
+                
