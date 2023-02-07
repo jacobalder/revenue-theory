@@ -43,3 +43,4 @@ vignettes/*.pdf
 \figures
 \writing\drafts
 *.docx
+*.doc
