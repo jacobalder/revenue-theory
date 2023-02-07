@@ -1,2 +1,5 @@
-# revenue-theory
-Coursework for SPEA-F 609 Seminar in Revenue Theory with Dr. Denvil Duncan at Indiana University O'Neill School of Public and Environmental Affairs
+# Seminar in Revenue Theory -- Dr. Denvil Duncan
+## SPEA-F 609, Indiana University--Bloomington, O'Neill School of Public and Environmental Affairs
+Coursework for SPEA-F 609 Seminar in Revenue Theory with Dr. Denvil Duncan at Indiana University--Bloomington, O'Neill School of Public and Environmental Affairs. Published under MIT license with permission from Dr. Duncan. All original assignments are Dr. Duncan's original copyright and are not republished in this public repository. 
+
+All published code may be used under MIT license without permission, though if you're a current student in this class, be mindful that you do your own work and learn what Dr. Duncan is teaching. This is an excellent course and served me extremely well, primarily because I worked hard! (Hence the repository, lots going on!)
