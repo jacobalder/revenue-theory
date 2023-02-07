@@ -1,0 +1,60 @@
+# Region Maker
+region_maker = function(d){
+  d[,region:=fifelse(state=="Alabama"  ,  "East South Central",
+  fifelse(state=="Alaska"               ,  "Pacific",
+  fifelse(state=="Arizona"             ,  "Mountain",
+  fifelse(state=="Arkansas"             ,  "West South Central",
+  fifelse(state=="California"           ,  "Pacific",
+  fifelse(state=="Colorado"            ,  "Mountain",
+  fifelse(state=="Connecticut"          ,  "Middle Atlantic",
+  fifelse(state=="Delaware"             ,  "South Atlantic",
+  fifelse(state=="District of Columbia",  "South Atlantic",
+  fifelse(state=="Florida"              ,  "South Atlantic",
+  fifelse(state=="Georgia"              ,  "South Atlantic",
+  fifelse(state=="Hawaii"              ,  "Pacific",
+  fifelse(state=="Idaho"                ,  "Mountain",
+  fifelse(state=="Illinois"             ,  "East North Central",
+  fifelse(state=="Indiana"             ,   "East North Central",
+  fifelse(state=="Iowa"                 ,  "West North Central",
+  fifelse(state=="Kansas"               ,  "West North Central",
+  fifelse(state=="Kentucky"            ,  "East South Central",
+  fifelse(state=="Louisiana"            ,  "West South Central",
+  fifelse(state=="Maine"                ,  "New England",
+  fifelse(state=="Maryland"            ,  "South Atlantic",
+  fifelse(state=="Massachusetts"        ,  "New England",
+  fifelse(state=="Michigan"             ,  "East North Central",
+  fifelse(state=="Minnesota"           ,  "West North Central",
+  fifelse(state=="Mississippi"          ,  "East South Central",as.character(state))))))))))))))))))))))))))]
+  
+  # Because it breaks datatable...        
+  d[,region:=fifelse(region=="Missouri"             ,  "West North Central",
+  fifelse(region=="Montana"             ,  "Mountain",
+  fifelse(region=="Nebraska"             ,  "West North Central",
+  fifelse(region=="Nevada"               ,  "Mountain",
+  fifelse(region=="New Hampshire"       ,  "New England",
+  fifelse(region=="New Jersey"           ,  "Middle Atlantic",
+  fifelse(region=="New Mexico"           ,  "Mountain",
+  fifelse(region=="New York"            ,  "Middle Atlantic",
+  fifelse(region=="North Carolina"       ,  "South Atlantic",
+  fifelse(region=="North Dakota"         ,  "West North Central",
+  fifelse(region=="Ohio"                ,  "East North Central",
+  fifelse(region=="Oklahoma"             ,  "West South Central",
+  fifelse(region=="Oregon"               ,  "Pacific",
+  fifelse(region=="Pennsylvania"        ,  "Middle Atlantic",
+  fifelse(region=="Rhode Island"         ,  "New England",
+  fifelse(region=="South Carolina"       ,  "South Atlantic",
+  fifelse(region=="South Dakota"        ,  "West North Central",
+  fifelse(region=="Tennessee"            ,  "East South Central",
+  fifelse(region=="Texas"                ,  "West South Central",
+  fifelse(region=="Utah"                ,  "Mountain",
+  fifelse(region=="Vermont"              ,  "New England",
+  fifelse(region=="Virginia"             ,  "South Atlantic",
+  fifelse(region=="Washington"          ,  "Pacific",
+  fifelse(region=="West Virginia"        ,  "South Atlantic",
+  fifelse(region=="Wisconsin"            ,  "East North Central",
+  fifelse(region=="Wyoming"             , "Mountain",region))))))))))))))))))))))))))]
+  
+  rg = c("Pacific","Mountain","West North Central","West South Central","East North Central","East South Central","New England","Middle Atlantic","South Atlantic")
+  d$region = factor(d$region,levels = rg)
+  return(as.data.table(d))
+}
